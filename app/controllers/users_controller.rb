@@ -58,7 +58,8 @@ class UsersController < ApplicationController
   end
 
   def spotify
-    render plain: "OK"
+    spotify_user = RSpotify::User.new(request.env['omniauth.auth'])
+    render plain: (spotify_user.top_artists.map {|artist| artist.name}.to_s + spotify_user.playlists.map {|playlist| playlist.followers}.to_s)
   end
   
 
