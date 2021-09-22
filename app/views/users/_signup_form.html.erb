@@ -13,22 +13,21 @@
 
   <div class="field">
     <%= form.label :username %>
-    <%= form.text_area :username %>
+    <%= form.text_field :username %>
   </div>
 
   <div class="field">
-    <%= form.label :password_hash %>
-    <%= form.text_area :password_hash %>
+    <%= form.label :password %>
+    <%= form.password_field :password %>
   </div>
 
   <div class="field">
-    <%= form.label :password_salt %>
-    <%= form.text_area :password_salt %>
+    <%= form.label :password_confirmation %>
+    <%= form.password_field :password_confirmation %>
   </div>
 
   <div class="field">
-    <%= form.label :spotify_id %>
-    <%= form.text_area :spotify_id %>
+    <%= form.hidden_field :spotify_id %>
   </div>
 
   <div class="actions">

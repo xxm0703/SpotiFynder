@@ -10,15 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_15_224741) do
+ActiveRecord::Schema.define(version: 2021_09_19_102206) do
 
   create_table "users", force: :cascade do |t|
-    t.text "username"
-    t.text "password_hash"
-    t.text "password_salt"
-    t.text "spotify_id"
+    t.string "username"
+    t.string "password_digest"
+    t.string "spotify_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["spotify_id"], name: "index_users_on_spotify_id"
   end
 
 end

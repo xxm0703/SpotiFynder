@@ -1,3 +1,5 @@
+require 'bcrypt'
+
 class UsersController < ApplicationController
   before_action :set_user, only: %i[ show edit update destroy ]
 
@@ -7,13 +9,17 @@ class UsersController < ApplicationController
 
   end
 
+  # GET /users/login
+  def login
+    @user = User.new
+  end
+
   # GET /users/1 or /users/1.json
   def show
   end
 
   # GET /users/new
   def new
-    @user = User.new
   end
 
   # GET /users/1/edit
@@ -58,10 +64,18 @@ class UsersController < ApplicationController
   end
 
   def spotify
-    spotify_user = RSpotify::User.new(request.env['omniauth.auth'])
-    render plain: (spotify_user.top_artists.map {|artist| artist.name}.to_s + spotify_user.playlists.map {|playlist| playlist.followers}.to_s)
+    @spotify_user = RSpotify::User.new(request.env['omniauth.auth'])
+
+    @user = User.find_by spotify_id: @spotify_user.id
+
+    if @user.nil?
+      @user = User.new
+      @user.spotify_id = @spotify_user.id
+      render new_user_path
+    else
+      redirect_to @user
+    end
   end
-  
 
   private
     # Use callbacks to share common setup or constraints between actions.
@@ -71,6 +85,7 @@ class UsersController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def user_params
-      params.require(:user).permit(:username, :password_hash, :password_salt, :spotify_id)
+      params.require(:user)
+            .permit(:username, :password, :password_confirmation, :spotify_id)
     end
 end
