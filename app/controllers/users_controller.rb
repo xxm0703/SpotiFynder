@@ -2,11 +2,10 @@ require 'bcrypt'
 
 class UsersController < ApplicationController
   before_action :set_user, only: %i[ show edit update destroy ]
-
+  include BCrypt
   # GET /users or /users.json
   def index
     @user = User.new
-
   end
 
   # GET /users/login
@@ -74,6 +73,22 @@ class UsersController < ApplicationController
       render new_user_path
     else
       redirect_to @user
+    end
+  end
+
+  def authenticate
+    user = user_params
+    @user = User.find_by username: user[:username]
+
+    if @user.nil?
+      redirect_to root_path, status: :see_other
+    else
+      db_pass = Password.new @user.password_digest
+      if db_pass == user[:password]
+        redirect_to user_path(@user.id)
+      else
+        redirect_to root_path, status: :see_other
+      end
     end
   end
 
