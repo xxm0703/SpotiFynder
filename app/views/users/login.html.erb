@@ -1,5 +1,4 @@
-<h1>Login User</h1>
-
-<%= render 'signin_form', user: @user %>
-
-<%= link_to 'Back', users_path %>
+<%= render 'bg_circles' do %>
+    <%= render 'signin_form', user: @user %>
+    <%= link_to 'Back', users_path, :class => "btn btn-primary btn-xl rounded-pill mt-5" %>
+<% end %>
