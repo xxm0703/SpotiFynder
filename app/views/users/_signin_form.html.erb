@@ -1,19 +1,19 @@
 <div class="container">
   <%= form_with model: user, url: auth_user_path do |form| %>
-  <% if user.errors.any? %>
-  <div id="error_explanation">
-    <h2><%= pluralize(user.errors.count, "error") %> prohibited this user from being saved:</h2>
-    <ul>
-      <% user.errors.each do |error| %>
-      <li><%= error.full_message %></li>
-      <% end %>
-    </ul>
-  </div>
-  <% end %>
   <div class="row justify-content-center">
 
     <div class="col-md-6 contents">
       <div class="row justify-content-center">
+        <% if user.errors.any? %>
+          <div id="error_explanation">
+            <h2><%= pluralize(user.errors.count, "error") %> prohibited you from logging in:</h2>
+            <ul>
+              <% user.errors.each do |error| %>
+              <li><%= error.full_message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
         <div class="col-md-12">
           <div class="form-block">
             <div class="mb-4">
@@ -32,9 +32,8 @@
               <%= form.submit "Log In", :class => "btn btn-pill text-white btn-block btn-primary" %>
 
               <span class="d-block text-center my-4 text-muted"> or sign up with</span>
-
               <div class="social-login text-center">
-                <a href='/auth/spotify' class="spotify">
+                <a href='/auth/spotify' data-method="POST" class="spotify">
                   <span class="iconify" data-icon="bi:spotify"></span>
                 </a>
               </div>

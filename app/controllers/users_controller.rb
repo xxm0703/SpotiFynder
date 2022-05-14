@@ -2,15 +2,22 @@ require 'bcrypt'
 
 class UsersController < ApplicationController
   before_action :set_user, only: %i[ show edit update destroy ]
+  before_action :update_user, only: %i[ index ]
   include BCrypt
   # GET /users or /users.json
   def index
-    @user = User.new
   end
 
   # GET /users/login
   def login
     @user = User.new
+  end
+  
+  # GET /users/login
+  def logout
+    @user = nil
+    cookies.delete :user_id
+    redirect_to root_path
   end
 
   # GET /users/1 or /users/1.json
@@ -72,7 +79,12 @@ class UsersController < ApplicationController
       @user.spotify_id = @spotify_user.id
       render new_user_path
     else
-      redirect_to @user
+      cookies.encrypted[:user_id] = { value: @user.id, expires: Time.now + 3600}
+      if params[:callback_address].nil?
+        redirect_to profile_path
+      else
+        redirect_to params[:callback_address]
+      end
     end
   end
 
@@ -80,22 +92,34 @@ class UsersController < ApplicationController
     user = user_params
     @user = User.find_by username: user[:username]
 
-    if @user.nil?
-      redirect_to root_path, status: :see_other
-    else
+    unless @user.nil?
       db_pass = Password.new @user.password_digest
       if db_pass == user[:password]
-        redirect_to user_path(@user.id)
-      else
-        redirect_to root_path, status: :see_other
+        cookies.encrypted[:user_id] = { value: @user.id, expires: Time.now + 3600}
+        if params[:callback_address].nil?
+          redirect_to profile_path
+        else
+          redirect_to params[:callback_address]
+        end
       end
     end
+    @user = User.new
+    @user.errors.add(:base, 'Invalid credentials')
+    render :login
   end
 
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_user
-      @user = User.find(params[:id])
+      update_user
+      return unless @user.nil?
+
+      redirect_to login_user_path, status: :unauthorized, callback_address: request.path
+    end
+
+    def update_user
+      session_user = cookies.encrypted[:user_id]
+      @user = session_user ? User.find(session_user) : nil
     end
 
     # Only allow a list of trusted parameters through.
